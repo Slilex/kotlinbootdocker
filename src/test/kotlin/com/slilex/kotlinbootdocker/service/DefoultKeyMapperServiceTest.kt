@@ -43,6 +43,8 @@ class DefoultKeyMapperServiceTest{
         assertEquals(KeyMapperService.Get.Link(LINK_A), service.getLink(keyA))
         val keyB = service.add(LINK_B)
         assertEquals(KeyMapperService.Get.Link(LINK_B), service.getLink(keyB))
+        assertNotEquals(keyA, keyB)
+        println()
     }
 
 

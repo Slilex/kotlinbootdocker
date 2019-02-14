@@ -1,6 +1,8 @@
 package com.slilex.kotlinbootdocker.service
 
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicLong
 
@@ -14,7 +16,7 @@ class DefoultKeyMapperService : KeyMapperService {
 
 
     override fun add(link: String): String {
-       val id = sequence.get()
+       val id = sequence.getAndIncrement()
         val key = converter.idToKey(id)
         map.put(id, link)
         return key
