@@ -1,25 +1,35 @@
 package com.slilex.kotlinbootdocker.service
 
+import org.springframework.beans.factory.annotation.Autowired
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicLong
 
 
 class DefoultKeyMapperService : KeyMapperService {
 
-    private val map: MutableMap<String, String> = ConcurrentHashMap()
+    @Autowired
+    lateinit var converter: KeyConverterService
+
+    val sequence = AtomicLong(10000000L)
 
 
-    override fun add(key: String, link: String): KeyMapperService.Add {
-       if(map.contains(key)) {
-           return KeyMapperService.Add.AlreadyExist(key)
-       }else{
-           map.put(key, link)
-           return KeyMapperService.Add.Succes(key, link)
-       }
+    override fun add(link: String): String {
+       val id = sequence.get()
+        val key = converter.idToKey(id)
+        map.put(id, link)
+        return key
     }
 
-    override fun getLink(key: String) = if(map.contains(key)) {
-        KeyMapperService.Get.Link(map.get(key)!!)
-    }else{
-        KeyMapperService.Get.NotFound(key)
+    private val map: MutableMap<Long, String> = ConcurrentHashMap()
+
+    override fun getLink(key: String): KeyMapperService.Get {
+        val id = converter.keyToID(key)
+        val result = map[id]
+        if (result == null) {
+            return KeyMapperService.Get.NotFound(key)
+        } else {
+            return KeyMapperService.Get.Link(result)
+        }
     }
+
 }
